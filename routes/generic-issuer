@@ -1,0 +1,30 @@
+/**
+ * (c) Copyright Merative US L.P. and others 2020-2022
+ *
+ *  SPDX-Licence-Identifier: Apache 2.0
+ */
+
+const express = require('express');
+const requestLogger = require('../middleware/request-logger');
+const dccIssuerController = require('../controllers/dcc-issuer');
+const vciIssuerController = require('../controllers/vci-issuer');
+
+const router = express.Router();
+
+router.get('/dcc/list', requestLogger, dccIssuerController.getTrustList);
+router.get('/dcc/list/:type', requestLogger, dccIssuerController.getTrustList);
+router.get('/dcc/list/:type/:country', requestLogger, dccIssuerController.getTrustList);
+router.get('/dcc/:id', requestLogger, dccIssuerController.getIssuerFromTrustList);
+router.delete('/dcc/:id', requestLogger, dccIssuerController.removeIssuerFromTrustList);
+router.get('/dcc', requestLogger, dccIssuerController.getTrustList);
+router.post('/dcc', requestLogger, dccIssuerController.insertIssuerIntoTrustList);
+
+router.get('/vci/list', requestLogger, vciIssuerController.getTrustList);
+router.post('/vci/list/url', requestLogger, vciIssuerController.getIssuerFromTrustListByUrl);
+router.get('/vci/:id', requestLogger, vciIssuerController.getIssuerFromTrustList);
+router.delete('/vci/:id', requestLogger, vciIssuerController.removeIssuerFromTrustList);
+router.get('/vci', requestLogger, vciIssuerController.getTrustList);
+router.post('/vci', requestLogger, vciIssuerController.insertIssuerIntoTrustList);
+router.put('/vci', requestLogger, vciIssuerController.updateIssuerInTrustList);
+
+module.exports = router;

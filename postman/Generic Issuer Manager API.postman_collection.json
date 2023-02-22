@@ -1,0 +1,1563 @@
+{
+	"info": {
+		"_postman_id": "209ebdca-813a-4934-a1ad-3a581ed0f45f",
+		"name": "Generic Issuer Manager API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "health",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, body includes string\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"ok\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/health",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Info",
+			"item": [
+				{
+					"name": "info",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, body includes strings\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"dcc\");",
+									"    pm.expect(pm.response.text()).to.include(\"vci\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/info",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Initialization (required)",
+			"item": [
+				{
+					"name": "init",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, persistent memory initialized\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.dcc.trustListLength).to.gte(0);",
+									"    pm.environment.set(\"NUM_DCC_ISSUERS\", jsonData.payload.dcc.trustListLength);",
+									"    pm.expect(jsonData.payload.vci.trustListLength).to.gte(0);",
+									"    pm.environment.set(\"NUM_VCI_ISSUERS\", jsonData.payload.vci.trustListLength);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/info",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCC Issuers list APIs",
+			"item": [
+				{
+					"name": "get list",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"DCC_COLLECTION_TYPE\"));",
+									"    var issuers = jsonData.payload.payload;",
+									"    pm.expect(issuers.length).to.eq(pm.environment.get(\"NUM_DCC_ISSUERS\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/list",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with valid type",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"DCC_COLLECTION_TYPE\"));",
+									"    pm.expect(jsonData.payload.payload.length).to.lte(pm.environment.get(\"NUM_DCC_ISSUERS\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/list/{{DCC_VALID_ISSUER_TYPE}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"list",
+								"{{DCC_VALID_ISSUER_TYPE}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with valid type+country",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"DCC_COLLECTION_TYPE\"));",
+									"    pm.expect(jsonData.payload.payload.length).to.lte(pm.environment.get(\"NUM_DCC_ISSUERS\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/list/{{DCC_VALID_ISSUER_TYPE}}//{{DCC_VALID_ISSUER_COUNTRY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"list",
+								"{{DCC_VALID_ISSUER_TYPE}}",
+								"{{DCC_VALID_ISSUER_COUNTRY}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with invalid type",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, no issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"DCC_COLLECTION_TYPE\"));",
+									"    pm.expect(jsonData.payload.payload.length).to.eq(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/list/{{DCC_INVALID_ISSUER_TYPE}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"list",
+								"{{DCC_INVALID_ISSUER_TYPE}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with invalid country",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, no issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"DCC_COLLECTION_TYPE\"));",
+									"    pm.expect(jsonData.payload.payload.length).to.eq(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/list/{{DCC_VALID_ISSUER_TYPE}}//{{DCC_INVALID_ISSUER_COUNTRY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"list",
+								"{{DCC_VALID_ISSUER_TYPE}}",
+								"{{DCC_INVALID_ISSUER_COUNTRY}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DCC Issuers CRUD APIs",
+			"item": [
+				{
+					"name": "get issuer pre-create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer does not exist\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{DCC_UNUSED_ISSUER_KEY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"{{DCC_UNUSED_ISSUER_KEY}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create issuer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.kid).to.eq(pm.environment.get(\"DCC_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.signature).to.eq(\"asdfghjkl\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"certificateType\": \"TST\",\n    \"country\": \"US\",\n    \"kid\": \"{{DCC_UNUSED_ISSUER_KEY}}\",\n    \"rawData\": \"qwertyuiop\",\n    \"signature\": \"asdfghjkl\",\n    \"thumbprint\": \"zxcvbnm\",\n    \"timestamp\": \"2022-11-08T01:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get issuer post-create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.kid).to.eq(pm.environment.get(\"DCC_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.signature).to.eq(\"asdfghjkl\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{DCC_UNUSED_ISSUER_KEY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"{{DCC_UNUSED_ISSUER_KEY}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create issuer again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer not created\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"certificateType\": \"TST\",\n    \"country\": \"US\",\n    \"kid\": \"{{DCC_UNUSED_ISSUER_KEY}}\",\n    \"rawData\": \"qwertyuiop\",\n    \"signature\": \"asdfghjkl\",\n    \"thumbprint\": \"zxcvbnm\",\n    \"timestamp\": \"2022-11-08T01:00:00\"\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete issuer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer deleted\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.kid).to.eq(pm.environment.get(\"DCC_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.signature).to.eq(\"asdfghjkl\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{DCC_UNUSED_ISSUER_KEY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"{{DCC_UNUSED_ISSUER_KEY}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get issuer post-delete",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer does not exist\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{DCC_UNUSED_ISSUER_KEY}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"{{DCC_UNUSED_ISSUER_KEY}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "VCI Issuers list APIs",
+			"item": [
+				{
+					"name": "get list",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuers retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.type).to.eq(pm.environment.get(\"VCI_COLLECTION_TYPE\"));",
+									"    var issuers = jsonData.payload.payload;",
+									"    pm.expect(issuers.length).to.eq(pm.environment.get(\"NUM_VCI_ISSUERS\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/list",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with valid url",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer retrieved\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_VALID_ISSUER_KEY\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"{{VCI_VALID_ISSUER_KEY}}\"\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/list/url",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"list",
+								"url"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list with invalid url",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, no issuer retrieved\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\": \"{{VCI_UNUSED_ISSUER_KEY}}\"\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/list/url",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"list",
+								"url"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "VCI Issuers CRUD APIs",
+			"item": [
+				{
+					"name": "get issuer pre-create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer does not exist\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/{{VCI_UNUSED_ISSUER_KEY_ENCODED}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"{{VCI_UNUSED_ISSUER_KEY_ENCODED}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update issuer pre-create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer updated\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"State of Blissful Happiness\",\n    \"url\": \"{{VCI_UNUSED_ISSUER_KEY}}\",\n    \"keys\": []\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create issuer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.name).to.eq(\"State of Bliss\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"State of Bliss\",\n    \"url\": \"{{VCI_UNUSED_ISSUER_KEY}}\",\n    \"keys\": []\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get issuer post-create",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.name).to.eq(\"State of Bliss\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/{{VCI_UNUSED_ISSUER_KEY_ENCODED}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"{{VCI_UNUSED_ISSUER_KEY_ENCODED}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create issuer again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer not created\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"State of Bliss\",\n    \"url\": \"{{VCI_UNUSED_ISSUER_KEY}}\",\n    \"keys\": []\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update issuer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer updated\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.name).to.eq(\"State of Blissful Happiness\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"State of Blissful Happiness\",\n    \"url\": \"{{VCI_UNUSED_ISSUER_KEY}}\",\n    \"keys\": []\n}"
+						},
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get issuer post-update",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer exists\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.name).to.eq(\"State of Blissful Happiness\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/vci/{{VCI_UNUSED_ISSUER_KEY_ENCODED}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"{{VCI_UNUSED_ISSUER_KEY_ENCODED}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete issuer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer deleted\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.payload.url).to.eq(pm.environment.get(\"VCI_UNUSED_ISSUER_KEY\"));",
+									"    pm.expect(jsonData.payload.name).to.eq(\"State of Blissful Happiness\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{VCI_UNUSED_ISSUER_KEY_ENCODED}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"vci",
+								"{{VCI_UNUSED_ISSUER_KEY_ENCODED}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get issuer post-delete",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Success, issuer does not exist\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{GENERIC_ISSUER_API}}/generic-issuers/dcc/{{DCC_UNUSED_ISSUER_KEY_ENCODED}}",
+							"host": [
+								"{{GENERIC_ISSUER_API}}"
+							],
+							"path": [
+								"generic-issuers",
+								"dcc",
+								"{{DCC_UNUSED_ISSUER_KEY_ENCODED}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

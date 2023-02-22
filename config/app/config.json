@@ -1,0 +1,55 @@
+{
+    "log": {
+        "name": "console",
+        "level": "debug"
+    },
+    "appID": {
+        "retries": 1,
+        "retryDelay": 3000,
+        "timeout": 10000
+    },
+    "dcc": {
+        "collectionType": "dcc-issuer-collection",
+        "persistenceName": "dcc-issuers",
+        "persistenceKey": "kid",
+        "requiredFields": [
+            "certificateType",
+            "country",
+            "kid",
+            "rawData",
+            "signature",
+            "thumbprint",
+            "timestamp"
+        ],
+        "syncInterval": 60,
+        "defaultExpiration": 365,
+        "retries": 3,
+        "timeout": 4000,
+        "gateway": "germany",
+        "gateways": {
+            "eu": {
+                "baseUrl": "https://dgca-verifier-service-eu-acc.cfapps.eu10.hana.ondemand.com"
+            },
+            "germany": {
+                "baseUrl": "https://de.dscg.ubirch.com/trustList/DSC"
+            }
+        }
+    },
+    "vci": {
+        "collectionType": "vci-issuer-collection",
+        "persistenceName": "vci-issuers",
+        "persistenceKey": "url",
+        "requiredFields": [
+            "url",
+            "name",
+            "keys"
+        ],
+        "syncInterval": 60,
+        "defaultExpiration": 365,
+        "retries": 3,
+        "timeout": 4000,
+        "baseUrl": "https://raw.githubusercontent.com/the-commons-project/vci-directory/main/vci-issuers.json",
+        "issuerUriSuffix": "/.well-known/jwks.json"
+    },
+    "timeout": 10000
+}

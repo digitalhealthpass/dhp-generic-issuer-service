@@ -1,0 +1,8 @@
+---
+applications:
+- disk_quota: 2048M
+  name: dhp-generic-issuer-manager-api
+  command: "npm start"
+  path: "."
+  instances: 1
+  memory: 512M

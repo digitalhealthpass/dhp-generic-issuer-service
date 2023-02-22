@@ -1,0 +1,867 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DHP Generic Issuer Manager API",
+    "description": "Swagger definition for Digital Health Pass Generic Issuer Manager API",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "health",
+      "description": "Health check"
+    },
+    {
+      "name": "info",
+      "description": "Release information"
+    },
+    {
+      "name": "users",
+      "description": "Manage users"
+    },
+    {
+      "name": "generic-issuers",
+      "description": "Manage generic issuers"
+    }
+  ],
+  "servers": [
+    {
+      "url": "/",
+      "description": "development"
+    },
+    {
+      "url": "/api/v1",
+      "description": "production"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health check",
+        "description": "Get health status of API server by performing health checks on server dependencies.  If the <code>details</code> query parameter is set to <code>true</code>, the health status of each server dependency is returned; otherwise, only an overall status is returned.",
+        "operationId": "health",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "details",
+            "type": "boolean",
+            "description": "Return detailed output upon success, default false"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "API server and all dependencies available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "One or more API server dependencies not available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/info": {
+      "get": {
+        "tags": [
+          "info"
+        ],
+        "summary": "Get information",
+        "description": "Get release and environment information of API server.",
+        "operationId": "info",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "User login",
+        "description": "Login as a registered user",
+        "operationId": "userLogin",
+        "requestBody": {
+          "description": "Login credentials",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful user login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed login due to invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generic-issuers/dcc": {
+      "post": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Add DCC issuer information",
+        "description": "Add information on specific DCC issuer.  Required fields include <code>certificateType</code>, <code>country</code>, <code>kid</code>, <code>rawData</code>, <code>signature</code>, <code>thumbprint</code> and <code>timestamp</code>.",
+        "operationId": "addDccIssuer",
+        "requestBody": {
+          "description": "DCC issuer information",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DccIssuerArrayElement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully added DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleDccIssuerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestError"
+          },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/dcc/{id}": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get DCC issuer information",
+        "description": "Get information on specific DCC issuer (id is <code>kid</code>).",
+        "operationId": "getDccIssuer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "description": "DCC issuer identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleDccIssuerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Delete DCC issuer information",
+        "description": "Delete information on specific DCC issuer (id is <code>kid</code>).",
+        "operationId": "deleteDccIssuer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "description": "DCC issuer identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleDccIssuerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/dcc/list": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get DCC issuer information",
+        "description": "Get information on DCC issuers.",
+        "operationId": "getDccIssuersList",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultipleDccIssuersResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/dcc/list/{type}": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get DCC issuer information",
+        "description": "Get information on DCC issuers with the specified type.",
+        "operationId": "getDccIssuersListByType",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "type": "string",
+            "description": "Type of trusted issuers to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultipleDccIssuersResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/dcc/list/{type}/{country}": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get DCC issuer information",
+        "description": "Get information on DCC issuers with the specified type and country.",
+        "operationId": "getDccIssuersListByTypeAndCountry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "type": "string",
+            "description": "Type of trusted issuers to retrieve"
+          },
+          {
+            "in": "path",
+            "name": "country",
+            "type": "string",
+            "description": "Country of trusted issuers to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved DCC issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultipleDccIssuersResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/vci": {
+      "post": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Add VCI issuer information",
+        "description": "Add information on specific VCI issuer.  Required fields include <code>url</code>, <code>name</code> and <code>keys</code>.",
+        "operationId": "addVciIssuer",
+        "requestBody": {
+          "description": "VCI issuer information",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VciIssuerArrayElement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully added VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleVciIssuerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestError"
+          },
+          "409": {
+            "$ref": "#/components/responses/ConflictError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Update VCI issuer information",
+        "description": "Update information on specific VCI issuer.  Required fields include <code>url</code>, <code>name</code> and <code>keys</code>.",
+        "operationId": "updateVciIssuer",
+        "requestBody": {
+          "description": "VCI issuer information",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VciIssuerArrayElement"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleVciIssuerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/vci/{id}": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get VCI issuer information",
+        "description": "Get information on specific VCI issuer (id is <code>url</code>).",
+        "operationId": "getVciIssuer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "description": "VCI issuer identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleVciIssuerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Delete VCI issuer information",
+        "description": "Delete information on specific VCI issuer (id is <code>url</code>).",
+        "operationId": "deleteVciIssuer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "description": "VCI issuer identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleVciIssuerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/vci/list": {
+      "get": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get VCI issuer information",
+        "description": "Get information on VCI issuers.",
+        "operationId": "getVciIssuersList",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultipleVciIssuersResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/generic-issuers/vci/list/url": {
+      "post": {
+        "tags": [
+          "generic-issuers"
+        ],
+        "summary": "Get VCI issuer information",
+        "description": "Get information on VCI issuers with the specified URL.",
+        "operationId": "getVciIssuersListByUrl",
+        "requestBody": {
+          "description": "URL of trusted issuers to retrieve",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GetVciIssuersRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved VCI issuer information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleVciIssuerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequestError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Overall status (ok or fail)"
+          },
+          "payload": {
+            "type": "array",
+            "description": "Only present if details=true",
+            "items": {
+              "type": "object",
+              "properties": {
+                "service": {
+                  "type": "string",
+                  "description": "Service status (ok or fail)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "InfoResponse": {
+        "type": "object",
+        "example": {
+          "message": "string",
+          "payload": {
+            "repo": "https://github.com/xxx",
+            "branch": "branch-id",
+            "commit": "commit-id",
+            "build_time": "Thu May 27 17:45:02 UTC 2021",
+            "dcc": {},
+            "vci": {}
+          }
+        }
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "id_token": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "expires_in": {
+            "type": "integer"
+          },
+          "scope": {
+            "type": "string"
+          }
+        }
+      },
+      "SingleDccIssuerResponse" : {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/DccIssuerArrayElement"
+          }
+        }
+      },
+      "MultipleDccIssuersResponse" : {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DccIssuerArrayElement"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DccIssuerArrayElement" : {
+        "type": "object",
+        "properties": {
+          "certificateType": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "rawData": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "thumbprint": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        }
+      },
+      "GetVciIssuersRequest" : {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "SingleVciIssuerResponse" : {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/VciIssuerArrayElement"
+          }
+        }
+      },
+      "MultipleVciIssuersResponse" : {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/VciIssuerArrayElement"
+                }
+              }
+            }
+          }
+        }
+      },
+      "VciIssuerArrayElement" : {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "keys": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VciIssuerKeyElement"
+            }
+          }
+        }
+      },
+      "VciIssuerKeyElement" : {
+        "type": "object",
+        "properties": {
+          "kty": {
+            "type": "string"
+          },
+          "kid": {
+            "type": "string"
+          },
+          "use": {
+            "type": "string"
+          },
+          "alg": {
+            "type": "string"
+          },
+          "crv": {
+            "type": "string"
+          },
+          "x": {
+            "type": "string"
+          },
+          "y": {
+            "type": "string"
+          }
+        }
+      },
+      "BasicMessage": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "BasicErrorMessage": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "InvalidRequestError": {
+        "description": "Missing or invalid required fields in request body",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "InvalidGetRequestError": {
+        "description": "Invalid fields in request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Logged in user is unauthorized to make this request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "Resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "ConflictError": {
+        "description": "Resource conflict has occurred",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Unexpected server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      }
+    }
+  }
+}
